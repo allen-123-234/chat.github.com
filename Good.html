@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用戶搜尋</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #searchBar {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      flex-grow: 1;
+    }
+
+    #searchButton {
+      background-color: #4CAF50;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      color: white;
+    }
+
+    #searchResults {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #searchResults li {
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      margin-bottom: 5px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    #searchResults li:hover {
+      background-color: #f0f0f0;
+    }
+
+    #searchResults li.no-results {
+      color: #888;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>搜尋用戶</h1>
+  <div class="search-container">
+    <input type="text" id="searchBar" placeholder="輸入用戶名..." oninput="searchUser()">
+    <button id="searchButton" onclick="searchUser()">搜尋</button>
+  </div>
+
+  <ul id="searchResults"></ul>
+
+  <script>
+   function searchUser() {
+  const searchTerm = document.getElementById("searchBar").value;
+
+  // 如果搜尋框為空，清空結果
+  if (searchTerm === "") {
+    document.getElementById("searchResults").innerHTML = "";
+    return;
+  }
+
+  // 發送 POST 請求至 Google Apps Script API
+  fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*", // 支援跨域請求
+    },
+    body: JSON.stringify({
+      action: "searchUser",
+      searchTerm: searchTerm,
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === "success") {
+      showSearchResults(data.results);
+    } else {
+      console.error("API錯誤:", data);
+      alert("搜尋過程中出錯，請稍後再試。");
+    }
+  })
+  .catch(error => {
+    console.error("網絡錯誤:", error);
+    alert("搜尋過程中出錯，請稍後再試。");
+  });
+}
+
+  </script>
+
+</body>
+</html>
